@@ -36,7 +36,6 @@ app.get('/', (req, res) => {
     res.json ([{ id: 1, nome: 'Luis Reichert'}])
   })
 
-
   //CADASTROS///////////////
   app.post('/cadastro', async(req, res) => {
 
@@ -45,7 +44,6 @@ app.get('/', (req, res) => {
     var password = req.body.password;
     var hashPassword = await bcrypt.hash(password, 8);
     
-
     cadastros.create({
         telefone: telefone,
         username: username,
@@ -67,20 +65,15 @@ function verifyJWT(req, res, next){
     })
 }
 
-
 //LOGIN///////////////
 app.post('/login', async(req, res) => {
     const token = jwt.sign({username:'Luis Reichert'}, SECRET)
-
-   
 
     var username = req.body.username;
     var password = req.body.password;
     var hashPassword = await bcrypt.hash(password, 8);
     
-
     login.create({
-     
         username: username,
         password: hashPassword,
         token: token,
@@ -88,10 +81,7 @@ app.post('/login', async(req, res) => {
         console.log("criado com sucesso")
       }).catch((err) => {
        console.log("erro " + err)
-   
-  
-    })
-    
+      })
     
     await cadastros.findAll({
        // attributes: ['username', 'password'],
@@ -104,10 +94,8 @@ app.post('/login', async(req, res) => {
         bcrypt.compare(password, result[0].dataValues.password, (err, data) => {
            if (data) {
                res.send({mensagem: 'login realizado com sucesso', token:token})
-
            } else {
             res.send({mensagem: 'erro'})
-            
            }
         })
     }).catch(()=>{
@@ -116,24 +104,18 @@ app.post('/login', async(req, res) => {
         })
     })
 })
- 
-
-
 
 // criação de rota que será acessada utilizando o método HTTP POST/
 // http://localhost:9000/teste
 app.post('/teste', verifyJWT, async (req, res) => {
-
     var username = req.body.username;
     var resultado = ''
     await login.findAll({
         // attributes: ['username', 'password'],
          where: {
         token:req.headers['x-access-token']
-      
          }
      }).then((result)=>{
-
          resultado = result[0].dataValues.username
         //console.log(result)
      }).catch(()=>{
@@ -142,15 +124,12 @@ app.post('/teste', verifyJWT, async (req, res) => {
          })
      })
 
- 
 //res.status(401).end();
-
   var host = req.body.host;
   var username = req.body.username;
   var password = req.body.password;
   var port = req.body.port;
   var hashPassword  = await bcrypt.hash(password, 8);
-  //console.log(hashPassword);
   //variavel conn pra conectar no cliente novo pelo SSH2
   const conn = new Client();
   var comando = 'uptime'
@@ -168,16 +147,12 @@ app.post('/teste', verifyJWT, async (req, res) => {
         tabelas.create({
           comando: comando,
           horario: String(data).slice(0,7),
-
           atividade: String(data).slice(8,18),
-
           usuarios: String(data).slice(19,29),
-
           cargamedia: String(data).slice(30,62),
-
           usuario: resultado
-
         })
+
         //stderr pra caso ocorra erro no processo
       }).stderr.on('data', (data) => {
         console.log('STDERR: ' + data);
@@ -203,7 +178,6 @@ app.post('/teste', verifyJWT, async (req, res) => {
   }).catch((err) => {
    console.log("erro " + err)
 })
-
 });
 
 // o servidor irá rodar dentro da porta 9000
